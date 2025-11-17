@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import settings
 from app.services.mqtt_handler import mqtt_service
+from app.database import check_db_connection
 
 # Configure logging
 logging.basicConfig(
@@ -87,6 +88,17 @@ async def mqtt_health_check():
     return {
         "status": "healthy" if is_connected else "unhealthy",
         "mqtt_broker": settings.mqtt_broker_host,
+        "connected": is_connected
+    }
+
+
+@app.get("/health/db", tags=["Health"])
+async def db_health_check():
+    """Database health check."""
+    is_connected = await check_db_connection()
+    return {
+        "status": "healthy" if is_connected else "unhealthy",
+        "database": "PostgreSQL + TimescaleDB",
         "connected": is_connected
     }
 

@@ -9,7 +9,13 @@ from datetime import datetime
 from typing import Optional, Callable, Dict, Any
 
 import paho.mqtt.client as mqtt
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.config import settings
+from app.database import AsyncSessionLocal
+from app.models.sensor import Sensor, SensorStatus
+from app.models.sensor_event import SensorEvent, EventType
 
 logger = logging.getLogger(__name__)
 
@@ -149,23 +155,26 @@ class MQTTService:
         2. Checking thresholds and triggering alerts
         3. Broadcasting to WebSocket clients
         """
-        sensor_id = data['sensor_id']
+        device_id = data['sensor_id']
         status = data['status']
         gas_level = data['gas_level']
         threshold = data.get('threshold', settings.default_gas_threshold_ppm)
+        timestamp = datetime.fromisoformat(data['timestamp'].replace('Z', '+00:00'))
 
-        logger.info(f"🔍 Processing sensor {sensor_id}: {status}, {gas_level} PPM")
+        logger.info(f"🔍 Processing sensor {device_id}: {status}, {gas_level} PPM")
 
         # Check if gas level exceeds threshold
-        if status == 'alert' or gas_level >= threshold:
-            logger.critical(f"🚨 GAS ALERT! Sensor {sensor_id} detected {gas_level} PPM (threshold: {threshold})")
+        is_alert = status == 'alert' or gas_level >= threshold
+        if is_alert:
+            logger.critical(f"🚨 GAS ALERT! Sensor {device_id} detected {gas_level} PPM (threshold: {threshold})")
             # TODO: Trigger notification workflow
-            # TODO: Store alert event in database
-            # TODO: Broadcast to WebSocket clients
 
-        # TODO: Store sensor event in TimescaleDB
-        # TODO: Update sensor last_seen timestamp
-        # TODO: Update sensor status
+        # Save to database in background thread (non-blocking)
+        import asyncio
+        threading.Thread(
+            target=lambda: asyncio.run(self._save_sensor_event(device_id, data, timestamp, is_alert)),
+            daemon=True
+        ).start()
 
         # Call registered message handlers
         for handler_name, handler_func in self.message_handlers.items():
@@ -173,6 +182,86 @@ class MQTTService:
                 handler_func(topic, data)
             except Exception as e:
                 logger.error(f"Error in message handler '{handler_name}': {e}")
+
+    async def _save_sensor_event(
+        self,
+        device_id: str,
+        data: Dict[str, Any],
+        timestamp: datetime,
+        is_alert: bool
+    ):
+        """
+        Save sensor event to database.
+
+        Args:
+            device_id: Sensor device ID
+            data: Sensor message data
+            timestamp: Event timestamp
+            is_alert: Whether this is an alert event
+        """
+        async with AsyncSessionLocal() as session:
+            try:
+                # Find sensor by device_id
+                result = await session.execute(
+                    select(Sensor).where(Sensor.device_id == device_id)
+                )
+                sensor = result.scalar_one_or_none()
+
+                if not sensor:
+                    logger.warning(f"⚠️ Sensor {device_id} not found in database. Skipping event save.")
+                    logger.info(f"💡 Register sensor via API: POST /api/v1/sensors with device_id='{device_id}'")
+                    return
+
+                # Map status to EventType
+                event_type_map = {
+                    'normal': EventType.NORMAL,
+                    'alert': EventType.ALERT,
+                    'warning': EventType.WARNING,
+                    'offline': EventType.OFFLINE,
+                    'online': EventType.ONLINE,
+                }
+                event_type = event_type_map.get(data['status'], EventType.NORMAL)
+
+                # Override to ALERT if gas level exceeds threshold
+                if is_alert:
+                    event_type = EventType.ALERT
+
+                # Create sensor event
+                sensor_event = SensorEvent(
+                    sensor_id=sensor.id,
+                    event_type=event_type,
+                    gas_level=data['gas_level'],
+                    threshold=data.get('threshold', settings.default_gas_threshold_ppm),
+                    battery_level=data.get('battery'),
+                    signal_strength=data.get('signal_strength'),
+                    raw_data=data,
+                    timestamp=timestamp
+                )
+                session.add(sensor_event)
+
+                # Update sensor last_seen and status
+                sensor.last_seen = timestamp
+                sensor.battery_level = data.get('battery')
+                sensor.signal_strength = data.get('signal_strength')
+
+                # Update sensor status based on event
+                if event_type == EventType.ALERT:
+                    sensor.status = SensorStatus.ALERT
+                elif event_type == EventType.OFFLINE:
+                    sensor.status = SensorStatus.DISCONNECTED
+                elif event_type in [EventType.NORMAL, EventType.ONLINE]:
+                    sensor.status = SensorStatus.ACTIVE
+
+                await session.commit()
+
+                logger.info(f"💾 Saved event for sensor {device_id} (DB ID: {sensor.id})")
+
+                # TODO: Broadcast to WebSocket clients
+                # TODO: If alert, trigger notification workflow
+
+            except Exception as e:
+                await session.rollback()
+                logger.error(f"❌ Failed to save sensor event: {e}", exc_info=True)
 
     def register_message_handler(self, name: str, handler: Callable):
         """
