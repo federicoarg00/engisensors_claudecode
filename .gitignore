@@ -1,0 +1,170 @@
+# EngiSensors .gitignore
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+credentials.json
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+ENV/
+env/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+*.cover
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# Node.js / JavaScript
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.eslintcache
+.node_repl_history
+*.tgz
+.yarn-integrity
+.cache
+.parcel-cache
+.next
+out/
+.nuxt
+dist
+.cache/
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+.classpath
+
+# Logs
+*.log
+logs/
+*.log.*
+combined.log
+error.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+postgres_data/
+pgdata/
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing
+coverage/
+.nyc_output/
+test-results/
+cypress/videos/
+cypress/screenshots/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# Build artifacts
+*.pyc
+*.pyo
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Package managers
+package-lock.json (optional - uncomment if needed)
+yarn.lock (optional - uncomment if needed)
+
+# Documentation builds
+docs/_build/
+site/
+
+# Monitoring and metrics
+prometheus_data/
+grafana_data/
+
+# Backups
+*.backup
+*.dump
+backup_*
+*.sql.gz
+
+# MQTT data
+mosquitto/data/
+mosquitto/log/
+
+# Redis dumps
+dump.rdb
+appendonly.aof
+
+# Certificates
+*.pem
+*.key
+*.crt
+*.csr
+ssl/
+certs/
+
+# Sensitive data
+*.secrets
+.secrets/
