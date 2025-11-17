@@ -1,0 +1,117 @@
+# EngiSensors Docker Compose Configuration
+# For local development and testing
+
+version: '3.8'
+
+services:
+  # PostgreSQL with TimescaleDB
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: engisensors-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-engisensors}
+      POSTGRES_USER: ${POSTGRES_USER:-engisensors}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-engisensors_dev}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U engisensors"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - engisensors-network
+
+  # Redis for caching and queues
+  redis:
+    image: redis:7-alpine
+    container_name: engisensors-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - engisensors-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    container_name: engisensors-backend
+    environment:
+      # Application
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      DEBUG: ${DEBUG:-True}
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-key-change-in-production}
+
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-engisensors}:${POSTGRES_PASSWORD:-engisensors_dev}@postgres:5432/${POSTGRES_DB:-engisensors}
+
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+
+      # MQTT - connects to external broker
+      MQTT_BROKER_HOST: ${MQTT_BROKER_HOST:-www.trustcapsupes.com}
+      MQTT_BROKER_PORT: ${MQTT_BROKER_PORT:-1883}
+      MQTT_BROKER_USERNAME: ${MQTT_BROKER_USERNAME:-}
+      MQTT_BROKER_PASSWORD: ${MQTT_BROKER_PASSWORD:-}
+
+      # JWT
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-jwt-secret}
+
+      # Notifications
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY:-}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER:-}
+
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./src/backend/app:/app/app
+    networks:
+      - engisensors-network
+    restart: unless-stopped
+
+  # pgAdmin (optional, for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: engisensors-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@engisensors.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - engisensors-network
+    profiles:
+      - debug
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  engisensors-network:
+    driver: bridge
