@@ -428,6 +428,149 @@
             display: block;
         }
 
+        /* Sensor List Styles */
+        .sensor-list {
+            padding-top: 1rem;
+        }
+
+        .apartment-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .apartment-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .apartment-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        .apartment-sensor-count {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+        }
+
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .sensor-item {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 2px solid;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sensor-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .sensor-item.online {
+            border-color: #28a745;
+        }
+
+        .sensor-item.alert {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .sensor-item.failure {
+            border-color: #ff9800;
+            background: #fffbf5;
+        }
+
+        .sensor-item.disconnected {
+            border-color: #6c757d;
+            background: #f5f5f5;
+            opacity: 0.8;
+        }
+
+        .sensor-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .sensor-location-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        .sensor-status-pill {
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .sensor-status-pill.online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .sensor-status-pill.alert {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .sensor-status-pill.failure {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .sensor-status-pill.disconnected {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .sensor-item-body {
+            margin-bottom: 0.8rem;
+        }
+
+        .sensor-metric-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 0.2rem 0;
+        }
+
+        .sensor-metric-row span {
+            color: #7f8c8d;
+        }
+
+        .sensor-metric-row strong {
+            color: #2c3e50;
+        }
+
+        .sensor-item-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            padding-top: 0.6rem;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .sensor-device-id {
+            font-family: monospace;
+        }
+
         .empty-state {
             background: white;
             padding: 3rem 2rem;
@@ -741,9 +884,224 @@
                     <div class="expand-icon">▼</div>
                 </div>
                 <div class="building-details">
-                    <p style="padding: 1rem; color: #7f8c8d; text-align: center;">
-                        Detalles de apartamentos y sensores...
-                    </p>
+                    <!-- Sensor List for Torre Central -->
+                    <div class="sensor-list">
+                        <!-- Apartment 101 -->
+                        <div class="apartment-group">
+                            <div class="apartment-header-row">
+                                <span class="apartment-title">🏠 Apartamento 101 - Piso 1</span>
+                                <span class="apartment-sensor-count">3 sensores</span>
+                            </div>
+                            <div class="sensor-grid">
+                                <div class="sensor-item online" onclick="openSensorDetail('S-TC-101-001')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🍳 Cocina</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>120 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>95% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-TC-101-001</span>
+                                        <span class="sensor-last-seen">Hace 30s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-TC-101-002')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🧺 Lavadero</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>95 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>88% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-TC-101-002</span>
+                                        <span class="sensor-last-seen">Hace 25s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item failure" onclick="openSensorDetail('S-TC-101-003')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🛋️ Sala</span>
+                                        <span class="sensor-status-pill failure">⚙️ En Falla</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>102 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong style="color: #dc3545;">15% 🔴</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-TC-101-003</span>
+                                        <span class="sensor-last-seen">Hace 15s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Apartment 203 -->
+                        <div class="apartment-group">
+                            <div class="apartment-header-row">
+                                <span class="apartment-title">🏠 Apartamento 203 - Piso 2</span>
+                                <span class="apartment-sensor-count">3 sensores</span>
+                            </div>
+                            <div class="sensor-grid">
+                                <div class="sensor-item alert" onclick="openSensorDetail('S-TC-203-001')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🍳 Cocina</span>
+                                        <span class="sensor-status-pill alert">🚨 Alerta</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong style="color: #dc3545;">950 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>92% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-TC-203-001</span>
+                                        <span class="sensor-last-seen">Hace 2min</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-TC-203-002')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🧺 Lavadero</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>110 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>78% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-TC-203-002</span>
+                                        <span class="sensor-last-seen">Hace 45s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-TC-203-003')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🛋️ Sala</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>85 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>91% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-TC-203-003</span>
+                                        <span class="sensor-last-seen">Hace 1min</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Apartment 305 -->
+                        <div class="apartment-group">
+                            <div class="apartment-header-row">
+                                <span class="apartment-title">🏠 Apartamento 305 - Piso 3</span>
+                                <span class="apartment-sensor-count">3 sensores</span>
+                            </div>
+                            <div class="sensor-grid">
+                                <div class="sensor-item online" onclick="openSensorDetail('S-TC-305-001')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🍳 Cocina</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>98 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>85% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-TC-305-001</span>
+                                        <span class="sensor-last-seen">Hace 20s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-TC-305-002')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🧺 Lavadero</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>72 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>90% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-TC-305-002</span>
+                                        <span class="sensor-last-seen">Hace 35s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-TC-305-003')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🛋️ Sala</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>88 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>82% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-TC-305-003</span>
+                                        <span class="sensor-last-seen">Hace 50s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -781,9 +1139,88 @@
                     <div class="expand-icon">▼</div>
                 </div>
                 <div class="building-details">
-                    <p style="padding: 1rem; color: #7f8c8d; text-align: center;">
-                        Detalles de apartamentos y sensores...
-                    </p>
+                    <!-- Sensor List for Residencial Las Palmas -->
+                    <div class="sensor-list">
+                        <!-- Apartment 305 -->
+                        <div class="apartment-group">
+                            <div class="apartment-header-row">
+                                <span class="apartment-title">🏠 Apartamento 305 - Piso 3</span>
+                                <span class="apartment-sensor-count">3 sensores</span>
+                            </div>
+                            <div class="sensor-grid">
+                                <div class="sensor-item alert" onclick="openSensorDetail('S-RP-305-001')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🧺 Lavadero</span>
+                                        <span class="sensor-status-pill alert">🚨 Alerta</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong style="color: #dc3545;">875 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>78% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-RP-305-001</span>
+                                        <span class="sensor-last-seen">Hace 5min</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-RP-305-002')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🍳 Cocina</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>145 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>92% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-RP-305-002</span>
+                                        <span class="sensor-last-seen">Hace 40s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-RP-305-003')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🛋️ Sala</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>98 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>85% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-RP-305-003</span>
+                                        <span class="sensor-last-seen">Hace 1min</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- More apartments would be listed here -->
+                        <div class="apartment-group">
+                            <div class="apartment-header-row">
+                                <span class="apartment-title">🏠 Otros apartamentos</span>
+                                <span class="apartment-sensor-count">9 sensores más en línea</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -821,9 +1258,152 @@
                     <div class="expand-icon">▼</div>
                 </div>
                 <div class="building-details">
-                    <p style="padding: 1rem; color: #7f8c8d; text-align: center;">
-                        Detalles de apartamentos y sensores...
-                    </p>
+                    <!-- Sensor List for Edificio Industrial Norte -->
+                    <div class="sensor-list">
+                        <!-- Bodega A -->
+                        <div class="apartment-group">
+                            <div class="apartment-header-row">
+                                <span class="apartment-title">📦 Bodega A - Planta Baja</span>
+                                <span class="apartment-sensor-count">3 sensores</span>
+                            </div>
+                            <div class="sensor-grid">
+                                <div class="sensor-item online" onclick="openSensorDetail('S-IN-A-001')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🏭 Zona Principal</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>65 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>98% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-IN-A-001</span>
+                                        <span class="sensor-last-seen">Hace 15s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-IN-A-002')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🏭 Zona Carga</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>82 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>91% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-IN-A-002</span>
+                                        <span class="sensor-last-seen">Hace 28s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item disconnected" onclick="openSensorDetail('S-IN-A-003')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🏭 Zona Almacén</span>
+                                        <span class="sensor-status-pill disconnected">⚫ Desconectado</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong style="color: #6c757d;">-- PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong style="color: #6c757d;">-- %</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-IN-A-003</span>
+                                        <span class="sensor-last-seen" style="color: #dc3545;">Hace 8h</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bodega B -->
+                        <div class="apartment-group">
+                            <div class="apartment-header-row">
+                                <span class="apartment-title">📦 Bodega B - Planta Baja</span>
+                                <span class="apartment-sensor-count">3 sensores</span>
+                            </div>
+                            <div class="sensor-grid">
+                                <div class="sensor-item online" onclick="openSensorDetail('S-IN-B-001')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🏭 Zona Principal</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>55 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>87% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-IN-B-001</span>
+                                        <span class="sensor-last-seen">Hace 45s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-IN-B-002')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🏭 Zona Carga</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>71 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>94% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-IN-B-002</span>
+                                        <span class="sensor-last-seen">Hace 32s</span>
+                                    </div>
+                                </div>
+
+                                <div class="sensor-item online" onclick="openSensorDetail('S-IN-B-003')">
+                                    <div class="sensor-item-header">
+                                        <span class="sensor-location-name">🏭 Zona Almacén</span>
+                                        <span class="sensor-status-pill online">En Línea</span>
+                                    </div>
+                                    <div class="sensor-item-body">
+                                        <div class="sensor-metric-row">
+                                            <span>Gas:</span>
+                                            <strong>48 PPM</strong>
+                                        </div>
+                                        <div class="sensor-metric-row">
+                                            <span>Batería:</span>
+                                            <strong>89% 🟢</strong>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-item-footer">
+                                        <span class="sensor-device-id">S-IN-B-003</span>
+                                        <span class="sensor-last-seen">Hace 55s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -837,6 +1417,12 @@
         function toggleBuilding(element) {
             const building = element.closest('.building-item');
             building.classList.toggle('expanded');
+        }
+
+        // Open sensor detail page
+        function openSensorDetail(sensorId) {
+            // Navigate to sensor detail page with sensor ID
+            window.location.href = `sensor-detail.html?sensor_id=${sensorId}`;
         }
 
         // Simular actualización en tiempo real
