@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EngiSensors Dashboard - Demo</title>
+    <title>EngiSensors Dashboard - Demo v2</title>
     <style>
         * {
             margin: 0;
@@ -115,39 +115,239 @@
             margin-top: 0.2rem;
         }
 
-        .building-card {
+        /* Alert Section - Priority Display */
+        .alerts-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 3px solid #dc3545;
+        }
+
+        .section-header.normal-border {
+            border-bottom-color: #667eea;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .section-badge {
+            background: #dc3545;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        .section-badge.info {
+            background: #667eea;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .alerts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .alert-card {
             background: white;
             border-radius: 12px;
+            overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 1.5rem;
+            border: 3px solid #dc3545;
+            animation: alertBlink 1.5s infinite;
+            transition: all 0.3s;
+        }
+
+        .alert-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        @keyframes alertBlink {
+            0%, 100% { border-color: #dc3545; }
+            50% { border-color: #ff6b6b; }
+        }
+
+        .alert-header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 1rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .alert-icon {
+            font-size: 1.8rem;
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-3deg); }
+            75% { transform: rotate(3deg); }
+        }
+
+        .alert-title {
+            flex: 1;
+        }
+
+        .alert-title h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .alert-location {
+            font-size: 0.85rem;
+            opacity: 0.95;
+        }
+
+        .alert-body {
+            padding: 1.2rem;
+        }
+
+        .alert-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            margin-bottom: 0.3rem;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .metric-value.danger {
+            color: #dc3545;
+            font-size: 1.4rem;
+        }
+
+        .alert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #ecf0f1;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .alert-time {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        /* Buildings Section */
+        .buildings-section {
+            margin-top: 2rem;
+        }
+
+        .building-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             overflow: hidden;
             transition: all 0.3s;
         }
 
-        .building-card:hover {
+        .building-item:hover {
             box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
 
-        .building-header {
+        .building-summary {
             padding: 1.5rem;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #ecf0f1;
+            transition: background 0.2s;
         }
 
-        .building-header:hover {
-            background: #fafbfc;
+        .building-summary:hover {
+            background: #f8f9fa;
         }
 
-        .building-info h2 {
+        .building-info {
+            flex: 1;
+        }
+
+        .building-name {
             font-size: 1.3rem;
+            font-weight: 600;
             color: #2c3e50;
             margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .building-info .address {
+        .building-address {
             color: #7f8c8d;
             font-size: 0.9rem;
         }
@@ -156,49 +356,60 @@
             display: flex;
             gap: 1.5rem;
             align-items: center;
+            margin-right: 1rem;
         }
 
-        .sensor-count {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
+        .building-stat {
+            text-align: center;
         }
 
-        .sensor-count.ok {
-            background: #d4edda;
-            color: #155724;
+        .building-stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: block;
         }
 
-        .sensor-count.alert {
-            background: #f8d7da;
-            color: #721c24;
-            animation: pulse 2s infinite;
+        .building-stat-value.total { color: #667eea; }
+        .building-stat-value.online { color: #28a745; }
+        .building-stat-value.alert { color: #dc3545; }
+        .building-stat-value.offline { color: #6c757d; }
+
+        .building-stat-label {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            margin-top: 0.2rem;
         }
 
-        .sensor-count.offline {
-            background: #e2e3e5;
-            color: #383d41;
+        .expand-icon {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            transition: transform 0.3s;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+        .building-item.expanded .expand-icon {
+            transform: rotate(180deg);
         }
 
-        .apartments {
-            padding: 1.5rem;
+        .building-details {
+            display: none;
+            padding: 0 1.5rem 1.5rem 1.5rem;
             background: #f8f9fa;
         }
 
-        .apartment {
+        .building-item.expanded .building-details {
+            display: block;
+        }
+
+        .apartment-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .apartment-card {
             background: white;
             border-radius: 8px;
             padding: 1rem;
-            margin-bottom: 1rem;
             border-left: 4px solid #667eea;
         }
 
@@ -222,11 +433,11 @@
 
         .sensors-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 1rem;
         }
 
-        .sensor {
+        .sensor-card {
             background: #f8f9fa;
             padding: 1rem;
             border-radius: 8px;
@@ -234,30 +445,19 @@
             transition: all 0.2s;
         }
 
-        .sensor:hover {
+        .sensor-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .sensor.normal {
+        .sensor-card.normal {
             border-color: #28a745;
             background: #f1f9f3;
         }
 
-        .sensor.alert {
-            border-color: #dc3545;
-            background: #fef5f6;
-            animation: alertBlink 1.5s infinite;
-        }
-
-        .sensor.offline {
+        .sensor-card.offline {
             border-color: #6c757d;
             background: #f5f6f7;
-        }
-
-        @keyframes alertBlink {
-            0%, 100% { background: #fef5f6; }
-            50% { background: #ffe0e3; }
         }
 
         .sensor-header {
@@ -288,11 +488,6 @@
             color: white;
         }
 
-        .sensor-status.alert {
-            background: #dc3545;
-            color: white;
-        }
-
         .sensor-status.offline {
             background: #6c757d;
             color: white;
@@ -303,6 +498,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 0.5rem;
             font-size: 0.85rem;
+            margin-bottom: 0.8rem;
         }
 
         .sensor-metric {
@@ -310,74 +506,41 @@
             flex-direction: column;
         }
 
-        .metric-label {
+        .sensor-metric-label {
             color: #7f8c8d;
             font-size: 0.75rem;
             margin-bottom: 0.2rem;
         }
 
-        .metric-value {
+        .sensor-metric-value {
             font-weight: 600;
             color: #2c3e50;
-            font-size: 1.1rem;
-        }
-
-        .metric-value.danger {
-            color: #dc3545;
-            font-weight: 700;
+            font-size: 1rem;
         }
 
         .sensor-id {
             color: #7f8c8d;
             font-size: 0.75rem;
-            margin-top: 0.8rem;
             padding-top: 0.8rem;
             border-top: 1px solid #e9ecef;
         }
 
-        .alert-banner {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-            padding: 1rem 2rem;
-            margin-bottom: 2rem;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-            animation: slideIn 0.5s ease-out;
+        .empty-state {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            color: #7f8c8d;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
 
-        .alert-icon {
-            font-size: 2rem;
-            animation: shake 0.5s infinite;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-5deg); }
-            75% { transform: rotate(5deg); }
-        }
-
-        .alert-text h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .alert-text p {
-            opacity: 0.9;
-            font-size: 0.9rem;
+        .empty-state h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
         }
 
         .last-update {
@@ -388,39 +551,32 @@
             padding: 1rem;
         }
 
-        .expand-icon {
-            transition: transform 0.3s;
-        }
-
-        .expanded .expand-icon {
-            transform: rotate(180deg);
-        }
-
         .battery-indicator {
             display: inline-block;
-            width: 30px;
-            height: 15px;
+            width: 25px;
+            height: 12px;
             border: 2px solid #2c3e50;
             border-radius: 2px;
             position: relative;
             margin-left: 0.3rem;
+            vertical-align: middle;
         }
 
         .battery-indicator::before {
             content: '';
             position: absolute;
-            right: -5px;
-            top: 3px;
-            width: 3px;
-            height: 5px;
+            right: -4px;
+            top: 2px;
+            width: 2px;
+            height: 4px;
             background: #2c3e50;
         }
 
         .battery-level {
             position: absolute;
-            left: 2px;
-            top: 2px;
-            bottom: 2px;
+            left: 1px;
+            top: 1px;
+            bottom: 1px;
             background: #28a745;
             border-radius: 1px;
         }
@@ -436,9 +592,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>
-            🛡️ EngiSensors
-        </h1>
+        <h1>🛡️ EngiSensors</h1>
         <div class="subtitle">Monitoreo en Tiempo Real de Sensores de Gas Combustible</div>
     </div>
 
@@ -452,269 +606,343 @@
     </div>
 
     <div class="container">
-        <!-- Alert Banner (shown when there's an active alert) -->
-        <div class="alert-banner">
-            <div class="alert-icon">🚨</div>
-            <div class="alert-text">
-                <h3>¡ALERTA DE GAS DETECTADA!</h3>
-                <p>Torre Central - Apartamento 203 - Cocina | Nivel: 950 PPM (Umbral: 800 PPM) | Hace 2 minutos</p>
-            </div>
-        </div>
-
         <!-- Statistics -->
         <div class="stats">
+            <div class="stat-card">
+                <div class="stat-icon blue">📡</div>
+                <div class="stat-info">
+                    <h3>27</h3>
+                    <p>Sensores Instalados</p>
+                </div>
+            </div>
             <div class="stat-card">
                 <div class="stat-icon green">✅</div>
                 <div class="stat-info">
                     <h3>24</h3>
-                    <p>Sensores Normales</p>
+                    <p>En Línea</p>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon red">🚨</div>
                 <div class="stat-info">
-                    <h3>1</h3>
-                    <p>Alertas Activas</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon yellow">⚠️</div>
-                <div class="stat-info">
                     <h3>2</h3>
-                    <p>Batería Baja</p>
+                    <p>En Falla/Alerta</p>
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon blue">🏢</div>
+                <div class="stat-icon yellow">⚫</div>
                 <div class="stat-info">
-                    <h3>3</h3>
-                    <p>Edificios Activos</p>
+                    <h3>1</h3>
+                    <p>Desconectados</p>
                 </div>
             </div>
         </div>
 
-        <!-- Building 1 - Torre Central (WITH ALERT) -->
-        <div class="building-card expanded">
-            <div class="building-header">
-                <div class="building-info">
-                    <h2>🏢 Torre Central</h2>
-                    <p class="address">📍 Av. Reforma 2350, CDMX</p>
-                </div>
-                <div class="building-stats">
-                    <div class="sensor-count ok">✅ 8 Normal</div>
-                    <div class="sensor-count alert">🚨 1 Alerta</div>
-                    <div class="sensor-count offline">⚫ 0 Desconectados</div>
-                    <span class="expand-icon">▼</span>
-                </div>
+        <!-- ALERTS SECTION - PRIORITY -->
+        <div class="alerts-section">
+            <div class="section-header">
+                <h2>🚨 Sensores en Falla/Alerta</h2>
+                <span class="section-badge">2 Activas</span>
             </div>
-            <div class="apartments">
-                <!-- Apartment 101 -->
-                <div class="apartment">
-                    <div class="apartment-header">
-                        <div>
-                            <div class="apartment-name">Apartamento 101</div>
-                            <div class="apartment-floor">Piso 1</div>
+
+            <div class="alerts-grid">
+                <!-- Alert 1 -->
+                <div class="alert-card">
+                    <div class="alert-header">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-title">
+                            <h3>¡GAS DETECTADO!</h3>
+                            <div class="alert-location">
+                                🏢 Torre Central · 🏠 Apt 203 · 🍳 Cocina
+                            </div>
                         </div>
                     </div>
-                    <div class="sensors-grid">
-                        <div class="sensor normal">
-                            <div class="sensor-header">
-                                <div class="sensor-location">🍳 Cocina</div>
-                                <div class="sensor-status normal">Normal</div>
+                    <div class="alert-body">
+                        <div class="alert-metrics">
+                            <div class="metric">
+                                <div class="metric-label">Nivel de Gas</div>
+                                <div class="metric-value danger">950 PPM</div>
                             </div>
-                            <div class="sensor-data">
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Gas Level</div>
-                                    <div class="metric-value">120 PPM</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Umbral</div>
-                                    <div class="metric-value">800 PPM</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Batería</div>
-                                    <div class="metric-value">
-                                        95%
-                                        <div class="battery-indicator">
-                                            <div class="battery-level" style="width: 95%"></div>
-                                        </div>
+                            <div class="metric">
+                                <div class="metric-label">Umbral</div>
+                                <div class="metric-value">800 PPM</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Batería</div>
+                                <div class="metric-value">
+                                    92%
+                                    <div class="battery-indicator">
+                                        <div class="battery-level" style="width: 92%"></div>
                                     </div>
                                 </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Señal</div>
-                                    <div class="metric-value">-45 dBm</div>
-                                </div>
                             </div>
-                            <div class="sensor-id">ID: S-TC-101-001 | Última actualización: Hace 30 seg</div>
+                            <div class="metric">
+                                <div class="metric-label">Señal</div>
+                                <div class="metric-value">-41 dBm</div>
+                            </div>
                         </div>
-
-                        <div class="sensor normal">
-                            <div class="sensor-header">
-                                <div class="sensor-location">🧺 Lavadero</div>
-                                <div class="sensor-status normal">Normal</div>
+                        <div class="alert-footer">
+                            <div class="alert-time">
+                                ⏰ Hace 2 minutos
                             </div>
-                            <div class="sensor-data">
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Gas Level</div>
-                                    <div class="metric-value">95 PPM</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Umbral</div>
-                                    <div class="metric-value">800 PPM</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Batería</div>
-                                    <div class="metric-value">
-                                        88%
-                                        <div class="battery-indicator">
-                                            <div class="battery-level" style="width: 88%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Señal</div>
-                                    <div class="metric-value">-52 dBm</div>
-                                </div>
-                            </div>
-                            <div class="sensor-id">ID: S-TC-101-002 | Última actualización: Hace 25 seg</div>
-                        </div>
-
-                        <div class="sensor normal">
-                            <div class="sensor-header">
-                                <div class="sensor-location">🛋️ Sala</div>
-                                <div class="sensor-status normal">Normal</div>
-                            </div>
-                            <div class="sensor-data">
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Gas Level</div>
-                                    <div class="metric-value">102 PPM</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Umbral</div>
-                                    <div class="metric-value">800 PPM</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Batería</div>
-                                    <div class="metric-value">
-                                        15%
-                                        <div class="battery-indicator">
-                                            <div class="battery-level critical" style="width: 15%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Señal</div>
-                                    <div class="metric-value">-48 dBm</div>
-                                </div>
-                            </div>
-                            <div class="sensor-id">ID: S-TC-101-003 | Última actualización: Hace 15 seg</div>
+                            <div>ID: S-TC-203-001</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Apartment 203 - WITH ALERT -->
-                <div class="apartment">
-                    <div class="apartment-header">
-                        <div>
-                            <div class="apartment-name">Apartamento 203 🚨</div>
-                            <div class="apartment-floor">Piso 2</div>
+                <!-- Alert 2 -->
+                <div class="alert-card">
+                    <div class="alert-header">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-title">
+                            <h3>¡GAS DETECTADO!</h3>
+                            <div class="alert-location">
+                                🏢 Residencial Las Palmas · 🏠 Apt 305 · 🧺 Lavadero
+                            </div>
                         </div>
                     </div>
-                    <div class="sensors-grid">
-                        <div class="sensor alert">
-                            <div class="sensor-header">
-                                <div class="sensor-location">🍳 Cocina</div>
-                                <div class="sensor-status alert">⚠️ ALERTA</div>
+                    <div class="alert-body">
+                        <div class="alert-metrics">
+                            <div class="metric">
+                                <div class="metric-label">Nivel de Gas</div>
+                                <div class="metric-value danger">875 PPM</div>
                             </div>
-                            <div class="sensor-data">
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Gas Level</div>
-                                    <div class="metric-value danger">950 PPM ⚠️</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Umbral</div>
-                                    <div class="metric-value">800 PPM</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Batería</div>
-                                    <div class="metric-value">
-                                        92%
-                                        <div class="battery-indicator">
-                                            <div class="battery-level" style="width: 92%"></div>
-                                        </div>
+                            <div class="metric">
+                                <div class="metric-label">Umbral</div>
+                                <div class="metric-value">800 PPM</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Batería</div>
+                                <div class="metric-value">
+                                    78%
+                                    <div class="battery-indicator">
+                                        <div class="battery-level" style="width: 78%"></div>
                                     </div>
                                 </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Señal</div>
-                                    <div class="metric-value">-41 dBm</div>
-                                </div>
                             </div>
-                            <div class="sensor-id">ID: S-TC-203-001 | ⚠️ ALERTA DETECTADA - Hace 2 min</div>
+                            <div class="metric">
+                                <div class="metric-label">Señal</div>
+                                <div class="metric-value">-55 dBm</div>
+                            </div>
                         </div>
-
-                        <div class="sensor normal">
-                            <div class="sensor-header">
-                                <div class="sensor-location">🧺 Lavadero</div>
-                                <div class="sensor-status normal">Normal</div>
+                        <div class="alert-footer">
+                            <div class="alert-time">
+                                ⏰ Hace 5 minutos
                             </div>
-                            <div class="sensor-data">
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Gas Level</div>
-                                    <div class="metric-value">110 PPM</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Umbral</div>
-                                    <div class="metric-value">800 PPM</div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Batería</div>
-                                    <div class="metric-value">
-                                        78%
-                                        <div class="battery-indicator">
-                                            <div class="battery-level" style="width: 78%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="sensor-metric">
-                                    <div class="metric-label">Señal</div>
-                                    <div class="metric-value">-50 dBm</div>
-                                </div>
-                            </div>
-                            <div class="sensor-id">ID: S-TC-203-002 | Última actualización: Hace 45 seg</div>
+                            <div>ID: S-RP-305-002</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Building 2 - Residencial Las Palmas -->
-        <div class="building-card">
-            <div class="building-header">
-                <div class="building-info">
-                    <h2>🏢 Residencial Las Palmas</h2>
-                    <p class="address">📍 Av. Universidad 1250, Guadalajara</p>
+        <!-- BUILDINGS SECTION -->
+        <div class="buildings-section">
+            <div class="section-header normal-border">
+                <h2>🏢 Edificios/Proyectos</h2>
+                <span class="section-badge info">3 Edificios</span>
+            </div>
+
+            <!-- Building 1: Torre Central -->
+            <div class="building-item">
+                <div class="building-summary" onclick="toggleBuilding(this)">
+                    <div class="building-info">
+                        <div class="building-name">
+                            🏢 Torre Central
+                        </div>
+                        <div class="building-address">📍 Av. Reforma 2350, CDMX</div>
+                    </div>
+                    <div class="building-stats">
+                        <div class="building-stat">
+                            <span class="building-stat-value total">9</span>
+                            <span class="building-stat-label">Instalados</span>
+                        </div>
+                        <div class="building-stat">
+                            <span class="building-stat-value online">8</span>
+                            <span class="building-stat-label">En Línea</span>
+                        </div>
+                        <div class="building-stat">
+                            <span class="building-stat-value alert">1</span>
+                            <span class="building-stat-label">En Falla</span>
+                        </div>
+                        <div class="building-stat">
+                            <span class="building-stat-value offline">0</span>
+                            <span class="building-stat-label">Offline</span>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
                 </div>
-                <div class="building-stats">
-                    <div class="sensor-count ok">✅ 12 Normal</div>
-                    <div class="sensor-count alert">🚨 0 Alertas</div>
-                    <div class="sensor-count offline">⚫ 0 Desconectados</div>
-                    <span class="expand-icon">▶</span>
+                <div class="building-details">
+                    <div class="apartment-list">
+                        <!-- Apartment 101 -->
+                        <div class="apartment-card">
+                            <div class="apartment-header">
+                                <div>
+                                    <div class="apartment-name">Apartamento 101</div>
+                                    <div class="apartment-floor">Piso 1</div>
+                                </div>
+                            </div>
+                            <div class="sensors-grid">
+                                <div class="sensor-card normal">
+                                    <div class="sensor-header">
+                                        <div class="sensor-location">🍳 Cocina</div>
+                                        <div class="sensor-status normal">Normal</div>
+                                    </div>
+                                    <div class="sensor-data">
+                                        <div class="sensor-metric">
+                                            <div class="sensor-metric-label">Gas</div>
+                                            <div class="sensor-metric-value">120 PPM</div>
+                                        </div>
+                                        <div class="sensor-metric">
+                                            <div class="sensor-metric-label">Batería</div>
+                                            <div class="sensor-metric-value">95%</div>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-id">S-TC-101-001 • Hace 30s</div>
+                                </div>
+
+                                <div class="sensor-card normal">
+                                    <div class="sensor-header">
+                                        <div class="sensor-location">🧺 Lavadero</div>
+                                        <div class="sensor-status normal">Normal</div>
+                                    </div>
+                                    <div class="sensor-data">
+                                        <div class="sensor-metric">
+                                            <div class="sensor-metric-label">Gas</div>
+                                            <div class="sensor-metric-value">95 PPM</div>
+                                        </div>
+                                        <div class="sensor-metric">
+                                            <div class="sensor-metric-label">Batería</div>
+                                            <div class="sensor-metric-value">88%</div>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-id">S-TC-101-002 • Hace 25s</div>
+                                </div>
+
+                                <div class="sensor-card normal">
+                                    <div class="sensor-header">
+                                        <div class="sensor-location">🛋️ Sala</div>
+                                        <div class="sensor-status normal">Normal</div>
+                                    </div>
+                                    <div class="sensor-data">
+                                        <div class="sensor-metric">
+                                            <div class="sensor-metric-label">Gas</div>
+                                            <div class="sensor-metric-value">102 PPM</div>
+                                        </div>
+                                        <div class="sensor-metric">
+                                            <div class="sensor-metric-label">Batería</div>
+                                            <div class="sensor-metric-value">15% ⚠️</div>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-id">S-TC-101-003 • Hace 15s</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Apartment 203 - Sensor en alerta ya mostrado arriba -->
+                        <div class="apartment-card">
+                            <div class="apartment-header">
+                                <div>
+                                    <div class="apartment-name">Apartamento 203 🚨</div>
+                                    <div class="apartment-floor">Piso 2</div>
+                                </div>
+                            </div>
+                            <div class="sensors-grid">
+                                <div class="sensor-card normal">
+                                    <div class="sensor-header">
+                                        <div class="sensor-location">🧺 Lavadero</div>
+                                        <div class="sensor-status normal">Normal</div>
+                                    </div>
+                                    <div class="sensor-data">
+                                        <div class="sensor-metric">
+                                            <div class="sensor-metric-label">Gas</div>
+                                            <div class="sensor-metric-value">110 PPM</div>
+                                        </div>
+                                        <div class="sensor-metric">
+                                            <div class="sensor-metric-label">Batería</div>
+                                            <div class="sensor-metric-value">78%</div>
+                                        </div>
+                                    </div>
+                                    <div class="sensor-id">S-TC-203-002 • Hace 45s</div>
+                                </div>
+                            </div>
+                            <div style="background: #fff3cd; padding: 0.8rem; border-radius: 6px; margin-top: 1rem; font-size: 0.85rem;">
+                                ⚠️ <strong>Sensor en alerta en este apartamento</strong> - Ver sección de alertas arriba
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Building 3 - Edificio Industrial Norte -->
-        <div class="building-card">
-            <div class="building-header">
-                <div class="building-info">
-                    <h2>🏢 Edificio Industrial Norte</h2>
-                    <p class="address">📍 Parque Industrial, Monterrey</p>
+            <!-- Building 2: Residencial Las Palmas -->
+            <div class="building-item">
+                <div class="building-summary" onclick="toggleBuilding(this)">
+                    <div class="building-info">
+                        <div class="building-name">
+                            🏢 Residencial Las Palmas
+                        </div>
+                        <div class="building-address">📍 Av. Universidad 1250, Guadalajara</div>
+                    </div>
+                    <div class="building-stats">
+                        <div class="building-stat">
+                            <span class="building-stat-value total">12</span>
+                            <span class="building-stat-label">Instalados</span>
+                        </div>
+                        <div class="building-stat">
+                            <span class="building-stat-value online">11</span>
+                            <span class="building-stat-label">En Línea</span>
+                        </div>
+                        <div class="building-stat">
+                            <span class="building-stat-value alert">1</span>
+                            <span class="building-stat-label">En Falla</span>
+                        </div>
+                        <div class="building-stat">
+                            <span class="building-stat-value offline">0</span>
+                            <span class="building-stat-label">Offline</span>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
                 </div>
-                <div class="building-stats">
-                    <div class="sensor-count ok">✅ 4 Normal</div>
-                    <div class="sensor-count alert">🚨 0 Alertas</div>
-                    <div class="sensor-count offline">⚫ 0 Desconectados</div>
-                    <span class="expand-icon">▶</span>
+                <div class="building-details">
+                    <p style="padding: 1rem; color: #7f8c8d; text-align: center;">
+                        Click para expandir y ver sensores...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Building 3: Edificio Industrial Norte -->
+            <div class="building-item">
+                <div class="building-summary" onclick="toggleBuilding(this)">
+                    <div class="building-info">
+                        <div class="building-name">
+                            🏢 Edificio Industrial Norte
+                        </div>
+                        <div class="building-address">📍 Parque Industrial, Monterrey</div>
+                    </div>
+                    <div class="building-stats">
+                        <div class="building-stat">
+                            <span class="building-stat-value total">6</span>
+                            <span class="building-stat-label">Instalados</span>
+                        </div>
+                        <div class="building-stat">
+                            <span class="building-stat-value online">5</span>
+                            <span class="building-stat-label">En Línea</span>
+                        </div>
+                        <div class="building-stat">
+                            <span class="building-stat-value alert">0</span>
+                            <span class="building-stat-label">En Falla</span>
+                        </div>
+                        <div class="building-stat">
+                            <span class="building-stat-value offline">1</span>
+                            <span class="building-stat-label">Offline</span>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
+                </div>
+                <div class="building-details">
+                    <p style="padding: 1rem; color: #7f8c8d; text-align: center;">
+                        Click para expandir y ver sensores...
+                    </p>
                 </div>
             </div>
         </div>
@@ -725,6 +953,11 @@
     </div>
 
     <script>
+        function toggleBuilding(element) {
+            const building = element.closest('.building-item');
+            building.classList.toggle('expanded');
+        }
+
         // Simular actualización en tiempo real
         setInterval(() => {
             const now = new Date();
@@ -732,14 +965,6 @@
             document.querySelector('.last-update').innerHTML =
                 `🔄 Actualización automática cada 30 segundos | Última actualización: 17 Nov 2025, ${timeStr}`;
         }, 30000);
-
-        // Toggle building expansion
-        document.querySelectorAll('.building-header').forEach(header => {
-            header.addEventListener('click', (e) => {
-                const card = e.target.closest('.building-card');
-                card.classList.toggle('expanded');
-            });
-        });
     </script>
 </body>
 </html>
