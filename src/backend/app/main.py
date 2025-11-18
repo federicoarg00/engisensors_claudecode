@@ -132,13 +132,14 @@ async def global_exception_handler(request, exc):
 
 
 # Import and include routers
-from app.routers import sensors, clients
+from app.routers import sensors, clients, sensor_events
 
 app.include_router(sensors.router)
 app.include_router(clients.router)
+app.include_router(sensor_events.router)
 
 # TODO: Add more routers as implemented
-# from app.routers import auth, buildings, apartments, locations, contacts, sensor_events
+# from app.routers import auth, buildings, apartments, locations, contacts
 # app.include_router(auth.router)
 # app.include_router(buildings.router)
 # etc...

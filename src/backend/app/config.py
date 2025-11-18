@@ -67,6 +67,12 @@ class Settings(BaseSettings):
     default_gas_threshold_ppm: int = 800
     max_contacts_per_client: int = 10
 
+    # Sensor Heartbeat and Disconnection
+    sensor_heartbeat_interval_minutes: int = 60  # Sensors report every 60 minutes (1 hour)
+    sensor_disconnection_timeout_hours: int = 6  # Consider disconnected after 6 hours without heartbeat
+    battery_low_threshold_percent: int = 20  # Low battery warning threshold
+    battery_critical_threshold_percent: int = 10  # Critical battery threshold
+
     # CORS
     cors_origins: List[str] = ["http://localhost:3000", "http://localhost:8000"]
     cors_allow_credentials: bool = True

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Sensor - EngiSensors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .header-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .back-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-4px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .sensor-info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .sensor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .sensor-title h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .sensor-id {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+
+        .sensor-status-badge {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-alert {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-failure {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-disconnected {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-label {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .events-table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .events-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .events-table th {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .events-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .events-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .event-type-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .event-alert {
+            background: #dc3545;
+            color: white;
+        }
+
+        .event-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .event-normal {
+            background: #28a745;
+            color: white;
+        }
+
+        .event-offline {
+            background: #6c757d;
+            color: white;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">
+            <h1>🔍 Detalle del Sensor</h1>
+            <div class="header-subtitle">Información completa y histórico de eventos</div>
+        </div>
+        <a href="demo-dashboard.html" class="back-button">
+            ← Volver al Dashboard
+        </a>
+    </div>
+
+    <div class="container">
+        <!-- Sensor Information Card -->
+        <div class="sensor-info-card">
+            <div class="sensor-header">
+                <div class="sensor-title">
+                    <h2>Sensor S-TC-203-001</h2>
+                    <div class="sensor-id">ID del Dispositivo: S-TC-203-001</div>
+                </div>
+                <div class="sensor-status-badge status-alert">
+                    🚨 Alerta - Gas Detectado
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Cliente Asignado</div>
+                    <div class="info-value">Inmobiliaria Reforma</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Edificio</div>
+                    <div class="info-value">Torre Central</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Apartamento</div>
+                    <div class="info-value">203 - Piso 2</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Ubicación</div>
+                    <div class="info-value">🍳 Cocina</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Fecha de Activación</div>
+                    <div class="info-value">15 Ago 2024</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Tiempo Activo</div>
+                    <div class="info-value">95 días</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Modelo</div>
+                    <div class="info-value">MQ-4 Gas Sensor</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Firmware</div>
+                    <div class="info-value">v1.2.3</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Nivel de Batería</div>
+                    <div class="info-value">92% 🟢</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Señal MQTT</div>
+                    <div class="info-value">-41 dBm (Excelente)</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Último Reporte</div>
+                    <div class="info-value">Hace 2 minutos</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Umbral de Gas</div>
+                    <div class="info-value">800 PPM</div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <h3 class="section-title">Estadísticas del Sensor</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">1,248</div>
+                    <div class="stat-label">Total de Eventos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Alertas de Gas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Advertencias</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1,230</div>
+                    <div class="stat-label">Lecturas Normales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">125 PPM</div>
+                    <div class="stat-label">Nivel Promedio de Gas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">950 PPM</div>
+                    <div class="stat-label">Nivel Máximo Detectado</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Events -->
+        <div class="sensor-info-card">
+            <h3 class="section-title">Historial de Eventos Recientes</h3>
+            <div class="events-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Tipo de Evento</th>
+                            <th>Nivel de Gas</th>
+                            <th>Batería</th>
+                            <th>Señal</th>
+                            <th>Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>18 Nov 2025, 10:43:00</td>
+                            <td><span class="event-type-badge event-alert">🚨 Alerta</span></td>
+                            <td><strong style="color: #dc3545;">950 PPM</strong></td>
+                            <td>92%</td>
+                            <td>-41 dBm</td>
+                            <td>Gas excede umbral (800 PPM)</td>
+                        </tr>
+                        <tr>
+                            <td>18 Nov 2025, 09:45:00</td>
+                            <td><span class="event-type-badge event-normal">✅ Normal</span></td>
+                            <td>125 PPM</td>
+                            <td>93%</td>
+                            <td>-42 dBm</td>
+                            <td>Lectura normal</td>
+                        </tr>
+                        <tr>
+                            <td>18 Nov 2025, 08:45:00</td>
+                            <td><span class="event-type-badge event-normal">✅ Normal</span></td>
+                            <td>118 PPM</td>
+                            <td>94%</td>
+                            <td>-40 dBm</td>
+                            <td>Lectura normal</td>
+                        </tr>
+                        <tr>
+                            <td>17 Nov 2025, 18:30:00</td>
+                            <td><span class="event-type-badge event-warning">⚠️ Advertencia</span></td>
+                            <td>750 PPM</td>
+                            <td>95%</td>
+                            <td>-43 dBm</td>
+                            <td>Nivel elevado, cerca del umbral</td>
+                        </tr>
+                        <tr>
+                            <td>17 Nov 2025, 15:20:00</td>
+                            <td><span class="event-type-badge event-normal">✅ Normal</span></td>
+                            <td>105 PPM</td>
+                            <td>96%</td>
+                            <td>-41 dBm</td>
+                            <td>Lectura normal</td>
+                        </tr>
+                        <tr>
+                            <td>15 Nov 2025, 22:15:00</td>
+                            <td><span class="event-type-badge event-alert">🚨 Alerta</span></td>
+                            <td>890 PPM</td>
+                            <td>97%</td>
+                            <td>-45 dBm</td>
+                            <td>Gas detectado en cocina</td>
+                        </tr>
+                        <tr>
+                            <td>15 Nov 2025, 10:00:00</td>
+                            <td><span class="event-type-badge event-normal">✅ Normal</span></td>
+                            <td>112 PPM</td>
+                            <td>98%</td>
+                            <td>-42 dBm</td>
+                            <td>Lectura normal</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Chart Placeholder -->
+        <div class="chart-container">
+            <h3 class="section-title">Gráfico de Niveles de Gas (Últimos 7 Días)</h3>
+            <div class="no-data">
+                📊 Gráfico de tendencias se implementará con Chart.js o similar
+            </div>
+        </div>
+    </div>
+</body>
+</html>
