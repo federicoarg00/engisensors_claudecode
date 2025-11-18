@@ -1,7 +1,7 @@
 """
 Database Initialization Script
 
-Creates all tables and sets up TimescaleDB hypertable for sensor_events.
+Creates all tables using Alembic migrations and sets up TimescaleDB hypertable for sensor_events.
 
 Usage:
     python scripts/init_db.py
@@ -9,12 +9,13 @@ Usage:
 import asyncio
 import sys
 import os
+import subprocess
 
 # Add parent directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src', 'backend'))
 
 from sqlalchemy import text
-from app.database import engine, Base
+from app.database import engine
 from app.config import settings
 import logging
 
@@ -85,6 +86,48 @@ async def create_hypertable():
             raise
 
 
+async def run_migrations():
+    """Run Alembic migrations to create database schema."""
+    try:
+        # Get the backend directory path
+        backend_dir = os.path.join(os.path.dirname(__file__), '..', 'src', 'backend')
+
+        # Run alembic upgrade head
+        result = subprocess.run(
+            ['alembic', 'upgrade', 'head'],
+            cwd=backend_dir,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+
+        logger.info("✅ Database migrations applied successfully")
+        if result.stdout:
+            for line in result.stdout.strip().split('\n'):
+                if line:
+                    logger.info(f"   {line}")
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"❌ Failed to run migrations: {e}")
+        if e.stdout:
+            logger.error(f"stdout: {e.stdout}")
+        if e.stderr:
+            logger.error(f"stderr: {e.stderr}")
+        raise
+    except FileNotFoundError:
+        logger.error("❌ Alembic not found. Install with: pip install alembic")
+        logger.info("⚠️ Falling back to direct table creation...")
+        # Fallback to create_all if alembic is not available
+        async with engine.begin() as conn:
+            from app.database import Base
+            from app.models import (
+                user, client, building, apartment,
+                location, sensor, sensor_event, contact, notification
+            )
+            await conn.run_sync(Base.metadata.create_all)
+            logger.info("✅ All tables created (fallback method)")
+
+
 async def create_indexes():
     """Create additional indexes for performance."""
     async with engine.begin() as conn:
@@ -117,17 +160,9 @@ async def init_database():
         logger.info("\n📦 Step 1: Enabling TimescaleDB extension...")
         await create_timescaledb_extension()
 
-        # Step 2: Create all tables
-        logger.info("\n📊 Step 2: Creating database tables...")
-        async with engine.begin() as conn:
-            # Import all models to ensure they're registered
-            from app.models import (
-                user, client, building, apartment,
-                location, sensor, sensor_event, contact, notification
-            )
-
-            await conn.run_sync(Base.metadata.create_all)
-            logger.info("✅ All tables created")
+        # Step 2: Run Alembic migrations
+        logger.info("\n📊 Step 2: Running database migrations...")
+        await run_migrations()
 
         # Step 3: Convert sensor_events to hypertable
         logger.info("\n⏰ Step 3: Setting up TimescaleDB hypertable...")
