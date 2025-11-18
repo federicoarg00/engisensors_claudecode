@@ -46,10 +46,12 @@ class ClientResponse(ClientBase):
 
 
 class ClientWithStats(ClientResponse):
-    """Schema for client with statistics."""
+    """Schema for client with statistics - 5 sensor categories."""
     total_buildings: int = 0
-    total_sensors: int = 0
-    active_sensors: int = 0
-    alert_sensors: int = 0
+    total_sensors: int = 0  # Sensores instalados (total)
+    online_sensors: int = 0  # Sensores en línea (active, no en mantenimiento)
+    failure_sensors: int = 0  # Sensores en falla técnica (maintenance)
+    alert_sensors: int = 0  # Sensores detectando gas (alert)
+    disconnected_sensors: int = 0  # Sensores desconectados (inactive, disconnected)
 
     model_config = ConfigDict(from_attributes=True)

@@ -76,7 +76,13 @@ async def list_clients(
     """
     Retrieve a list of all clients with statistics.
 
-    Returns total buildings, total sensors, active sensors, and alert sensors for each client.
+    Returns:
+    - total_buildings: Number of buildings for this client
+    - total_sensors: Total sensors installed
+    - online_sensors: Sensors online and operational (status: active)
+    - failure_sensors: Sensors with technical issues (status: maintenance)
+    - alert_sensors: Sensors detecting gas (status: alert)
+    - disconnected_sensors: Sensors not communicating (status: inactive/disconnected)
     """
     # Build query
     query = select(Client).order_by(Client.created_at.desc())
@@ -114,14 +120,22 @@ async def list_clients(
         sensors_result = await db.execute(sensors_query)
         sensors = sensors_result.all()
 
+        # Calculate 5 sensor categories
         total_sensors = len(sensors)
-        active_sensors = sum(1 for _, status in sensors if status == SensorStatus.ACTIVE)
+        online_sensors = sum(1 for _, status in sensors if status == SensorStatus.ACTIVE)
+        failure_sensors = sum(1 for _, status in sensors if status == SensorStatus.MAINTENANCE)
         alert_sensors = sum(1 for _, status in sensors if status == SensorStatus.ALERT)
+        disconnected_sensors = sum(
+            1 for _, status in sensors
+            if status in [SensorStatus.INACTIVE, SensorStatus.DISCONNECTED]
+        )
 
         client_dict["total_buildings"] = total_buildings
         client_dict["total_sensors"] = total_sensors
-        client_dict["active_sensors"] = active_sensors
+        client_dict["online_sensors"] = online_sensors
+        client_dict["failure_sensors"] = failure_sensors
         client_dict["alert_sensors"] = alert_sensors
+        client_dict["disconnected_sensors"] = disconnected_sensors
 
         response.append(client_dict)
 
@@ -171,14 +185,22 @@ async def get_client(
     sensors_result = await db.execute(sensors_query)
     sensors = sensors_result.all()
 
+    # Calculate 5 sensor categories
     total_sensors = len(sensors)
-    active_sensors = sum(1 for _, status in sensors if status == SensorStatus.ACTIVE)
+    online_sensors = sum(1 for _, status in sensors if status == SensorStatus.ACTIVE)
+    failure_sensors = sum(1 for _, status in sensors if status == SensorStatus.MAINTENANCE)
     alert_sensors = sum(1 for _, status in sensors if status == SensorStatus.ALERT)
+    disconnected_sensors = sum(
+        1 for _, status in sensors
+        if status in [SensorStatus.INACTIVE, SensorStatus.DISCONNECTED]
+    )
 
     client_dict["total_buildings"] = total_buildings
     client_dict["total_sensors"] = total_sensors
-    client_dict["active_sensors"] = active_sensors
+    client_dict["online_sensors"] = online_sensors
+    client_dict["failure_sensors"] = failure_sensors
     client_dict["alert_sensors"] = alert_sensors
+    client_dict["disconnected_sensors"] = disconnected_sensors
 
     return client_dict
 

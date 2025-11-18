@@ -298,11 +298,20 @@ List all clients with statistics.
     "updated_at": "2025-11-18T10:00:00Z",
     "total_buildings": 3,
     "total_sensors": 27,
-    "active_sensors": 25,
-    "alert_sensors": 1
+    "online_sensors": 23,
+    "failure_sensors": 1,
+    "alert_sensors": 2,
+    "disconnected_sensors": 1
   }
 ]
 ```
+
+**Statistics Explanation:**
+- `total_sensors`: Total sensors installed (all statuses)
+- `online_sensors`: Sensors operational and online (status: `active`)
+- `failure_sensors`: Sensors with technical issues (status: `maintenance`)
+- `alert_sensors`: Sensors detecting gas (status: `alert`)
+- `disconnected_sensors`: Sensors not communicating (status: `inactive` or `disconnected`)
 
 ### GET /api/v1/clients/{client_id}
 
