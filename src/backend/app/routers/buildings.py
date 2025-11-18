@@ -16,6 +16,7 @@ from app.models.apartment import Apartment
 from app.models.location import Location
 from app.models.sensor import Sensor, SensorStatus
 from app.models.client import Client
+from app.models.user import User
 from app.schemas.building import (
     BuildingCreate,
     BuildingUpdate,
@@ -57,6 +58,7 @@ async def list_buildings(
         .where(Building.deleted_at.is_(None))
         .options(
             selectinload(Building.client),
+            selectinload(Building.admin),
             selectinload(Building.apartments)
             .selectinload(Apartment.locations)
             .selectinload(Location.sensors)
@@ -108,6 +110,7 @@ async def list_buildings(
         building_data = BuildingWithStats(
             id=building.id,
             client_id=building.client_id,
+            admin_id=building.admin_id,
             name=building.name,
             address=building.address,
             city=building.city,
@@ -119,6 +122,8 @@ async def list_buildings(
             created_at=building.created_at,
             updated_at=building.updated_at,
             client_name=building.client.name if building.client else None,
+            admin_name=building.admin.email.split('@')[0] if building.admin else None,
+            admin_email=building.admin.email if building.admin else None,
             total_apartments=len([a for a in building.apartments if not a.deleted_at]),
             total_sensors=total_sensors,
             online_sensors=online_count,
@@ -149,6 +154,7 @@ async def get_building(
         .where(and_(Building.id == building_id, Building.deleted_at.is_(None)))
         .options(
             selectinload(Building.client),
+            selectinload(Building.admin),
             selectinload(Building.apartments)
             .selectinload(Apartment.locations)
             .selectinload(Location.sensors)
@@ -195,6 +201,7 @@ async def get_building(
     return BuildingWithStats(
         id=building.id,
         client_id=building.client_id,
+        admin_id=building.admin_id,
         name=building.name,
         address=building.address,
         city=building.city,
@@ -206,6 +213,8 @@ async def get_building(
         created_at=building.created_at,
         updated_at=building.updated_at,
         client_name=building.client.name if building.client else None,
+        admin_name=building.admin.email.split('@')[0] if building.admin else None,
+        admin_email=building.admin.email if building.admin else None,
         total_apartments=len([a for a in building.apartments if not a.deleted_at]),
         total_sensors=len(sensors),
         online_sensors=online_count,
@@ -372,9 +381,22 @@ async def create_building(
             detail=f"Client with id '{building_data.client_id}' not found",
         )
 
+    # Verify admin exists if provided
+    if building_data.admin_id:
+        admin_result = await db.execute(
+            select(User).where(User.id == building_data.admin_id)
+        )
+        admin = admin_result.scalar_one_or_none()
+        if not admin:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User with id '{building_data.admin_id}' not found",
+            )
+
     # Create building
     building = Building(
         client_id=building_data.client_id,
+        admin_id=building_data.admin_id,
         name=building_data.name,
         address=building_data.address,
         city=building_data.city,
@@ -420,6 +442,19 @@ async def update_building(
 
     # Update fields
     update_data = building_data.model_dump(exclude_unset=True)
+
+    # Verify admin exists if being updated
+    if "admin_id" in update_data and update_data["admin_id"]:
+        admin_result = await db.execute(
+            select(User).where(User.id == update_data["admin_id"])
+        )
+        admin = admin_result.scalar_one_or_none()
+        if not admin:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User with id '{update_data['admin_id']}' not found",
+            )
+
     for field, value in update_data.items():
         setattr(building, field, value)
 

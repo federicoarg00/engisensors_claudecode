@@ -22,9 +22,170 @@ from app.schemas.sensor import (
     SensorResponse,
     SensorWithLocation,
     SensorStatusUpdate,
+    SensorCodeValidation,
+    SensorCodeValidationResponse,
+    SensorProvision,
+    SensorProvisionResponse,
 )
 
 router = APIRouter(prefix="/api/v1/sensors", tags=["Sensors"])
+
+
+@router.post(
+    "/validate-code",
+    response_model=SensorCodeValidationResponse,
+    summary="Validate sensor code",
+)
+async def validate_sensor_code(
+    validation: SensorCodeValidation,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Validate a sensor code before registration.
+
+    Checks if the code is properly formatted and not already registered.
+
+    - **device_id**: 10-character alphanumeric sensor code
+    """
+    device_id = validation.device_id.upper()
+
+    # Check if device_id already exists
+    result = await db.execute(
+        select(Sensor).where(Sensor.device_id == device_id)
+    )
+    existing_sensor = result.scalar_one_or_none()
+
+    if existing_sensor:
+        return SensorCodeValidationResponse(
+            valid=True,
+            available=False,
+            device_id=device_id,
+            message=f"El sensor {device_id} ya está registrado en el sistema",
+            suggested_model=existing_sensor.model,
+            suggested_threshold=existing_sensor.gas_threshold_ppm,
+        )
+
+    return SensorCodeValidationResponse(
+        valid=True,
+        available=True,
+        device_id=device_id,
+        message=f"El código {device_id} está disponible para registro",
+        suggested_model="MQ-2 Gas Detector",
+        suggested_threshold=800,
+    )
+
+
+@router.post(
+    "/provision",
+    response_model=SensorProvisionResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Provision a new sensor",
+)
+async def provision_sensor(
+    provision_data: SensorProvision,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Provision/register a new sensor with full hierarchy validation.
+
+    This endpoint:
+    1. Validates the sensor code format and availability
+    2. Verifies the location exists and gets hierarchy info
+    3. Creates the sensor record
+    4. Returns complete provisioning info including hierarchy
+
+    - **device_id**: Unique 10-character alphanumeric sensor code
+    - **location_id**: UUID of the location where sensor is installed
+    - **gas_threshold_ppm**: Alert threshold in PPM (default: 800)
+    - **model**: Sensor model name
+    - **firmware_version**: Firmware version
+    """
+    device_id = provision_data.device_id.upper()
+
+    # Check if device_id already exists
+    result = await db.execute(
+        select(Sensor).where(Sensor.device_id == device_id)
+    )
+    existing_sensor = result.scalar_one_or_none()
+
+    if existing_sensor:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"El sensor con código '{device_id}' ya está registrado",
+        )
+
+    # Verify location exists and get full hierarchy
+    location_result = await db.execute(
+        select(Location)
+        .where(Location.id == provision_data.location_id)
+        .options(
+            selectinload(Location.apartment)
+            .selectinload(Apartment.building)
+            .selectinload(Building.client)
+        )
+    )
+    location = location_result.scalar_one_or_none()
+
+    if not location:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Ubicación con id '{provision_data.location_id}' no encontrada",
+        )
+
+    if location.deleted_at:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La ubicación seleccionada ha sido eliminada",
+        )
+
+    # Check if location already has a sensor
+    existing_in_location = await db.execute(
+        select(Sensor).where(
+            Sensor.location_id == provision_data.location_id,
+            Sensor.deleted_at.is_(None)
+        )
+    )
+    if existing_in_location.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Esta ubicación ya tiene un sensor asignado",
+        )
+
+    # Create sensor
+    new_sensor = Sensor(
+        device_id=device_id,
+        model=provision_data.model,
+        firmware_version=provision_data.firmware_version,
+        gas_threshold_ppm=provision_data.gas_threshold_ppm,
+        location_id=provision_data.location_id,
+        status=SensorStatus.INACTIVE,  # Start as inactive until first message
+    )
+
+    db.add(new_sensor)
+    await db.commit()
+    await db.refresh(new_sensor)
+
+    # Build response with hierarchy info
+    response_data = {
+        "id": new_sensor.id,
+        "device_id": new_sensor.device_id,
+        "model": new_sensor.model,
+        "firmware_version": new_sensor.firmware_version,
+        "gas_threshold_ppm": new_sensor.gas_threshold_ppm,
+        "status": new_sensor.status,
+        "battery_level": new_sensor.battery_level,
+        "signal_strength": new_sensor.signal_strength,
+        "last_seen": new_sensor.last_seen,
+        "location_id": new_sensor.location_id,
+        "created_at": new_sensor.created_at,
+        "updated_at": new_sensor.updated_at,
+        "location_type": location.location_type.value if location else None,
+        "apartment_number": location.apartment.number if location and location.apartment else None,
+        "building_name": location.apartment.building.name if location and location.apartment and location.apartment.building else None,
+        "client_name": location.apartment.building.client.name if location and location.apartment and location.apartment.building and location.apartment.building.client else None,
+    }
+
+    return response_data
 
 
 @router.post(

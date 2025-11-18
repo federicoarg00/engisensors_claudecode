@@ -21,6 +21,7 @@ class Building(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     client_id = Column(UUID(as_uuid=True), ForeignKey("clients.id", ondelete="CASCADE"), nullable=False, index=True)
+    admin_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
 
     name = Column(String(255), nullable=False)
     address = Column(Text, nullable=False)
@@ -39,6 +40,7 @@ class Building(Base):
 
     # Relationships
     client = relationship("Client", back_populates="buildings")
+    admin = relationship("User", foreign_keys=[admin_id])
     apartments = relationship("Apartment", back_populates="building", cascade="all, delete-orphan")
 
     def __repr__(self):

@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EngiSensors - Configuración de Sensores</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f5f7fa;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        .back-link {
+            color: #3498db;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .config-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .form-group .hint {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 0.25rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-control:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .form-control.error {
+            border-color: #e74c3c;
+        }
+
+        .form-control.success {
+            border-color: #27ae60;
+        }
+
+        .sensor-code-input {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 0.2rem;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .sensor-code-container {
+            position: relative;
+        }
+
+        .sensor-code-status {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+
+        .hierarchy-section {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .hierarchy-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #7f8c8d;
+            flex-shrink: 0;
+        }
+
+        .step-number.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .step-number.completed {
+            background: #27ae60;
+            color: white;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content label {
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2980b9;
+        }
+
+        .btn-primary:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .preview-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .preview-title {
+            font-size: 1rem;
+            color: #34495e;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .preview-hierarchy {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .preview-item {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .preview-item.empty {
+            color: #bdc3c7;
+            font-style: italic;
+        }
+
+        .preview-arrow {
+            color: #bdc3c7;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .sensor-info-card {
+            background: #e8f4f8;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .sensor-info-card h4 {
+            font-size: 0.9rem;
+            color: #2980b9;
+            margin-bottom: 0.5rem;
+        }
+
+        .sensor-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .sensor-info-item {
+            font-size: 0.85rem;
+        }
+
+        .sensor-info-item span {
+            color: #7f8c8d;
+        }
+
+        .sensor-info-item strong {
+            color: #2c3e50;
+        }
+
+        .config-options {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .config-options h4 {
+            font-size: 1rem;
+            color: #34495e;
+            margin-bottom: 1rem;
+        }
+
+        .option-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .option-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .recently-registered {
+            margin-top: 2rem;
+        }
+
+        .sensor-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .sensor-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .sensor-list-item .sensor-code {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .sensor-list-item .sensor-location {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+
+        .sensor-list-item .sensor-date {
+            font-size: 0.8rem;
+            color: #95a5a6;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .option-row {
+                flex-direction: column;
+            }
+
+            .preview-hierarchy {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .preview-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Configuración de Sensores</h1>
+            <a href="demo-dashboard.html" class="back-link">
+                <span>&larr;</span> Volver al Dashboard
+            </a>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Sensor Registration Card -->
+        <div class="config-card">
+            <h2 class="card-title">Registrar Nuevo Sensor</h2>
+
+            <!-- Step 1: Sensor Code -->
+            <div class="form-group">
+                <label for="sensorCode">Código del Sensor</label>
+                <div class="sensor-code-container">
+                    <input
+                        type="text"
+                        id="sensorCode"
+                        class="form-control sensor-code-input"
+                        placeholder="XXXXXXXXXX"
+                        maxlength="10"
+                        pattern="[A-Za-z0-9]{10}"
+                    >
+                    <span class="sensor-code-status" id="codeStatus"></span>
+                </div>
+                <p class="hint">Ingrese el código único de 10 caracteres alfanuméricos del sensor</p>
+            </div>
+
+            <!-- Sensor Info (shown after code validation) -->
+            <div class="sensor-info-card" id="sensorInfo" style="display: none;">
+                <h4>Información del Sensor</h4>
+                <div class="sensor-info-grid">
+                    <div class="sensor-info-item">
+                        <span>Modelo:</span> <strong id="sensorModel">MQ-2 Gas Detector</strong>
+                    </div>
+                    <div class="sensor-info-item">
+                        <span>Firmware:</span> <strong id="sensorFirmware">v2.1.0</strong>
+                    </div>
+                    <div class="sensor-info-item">
+                        <span>Umbral:</span> <strong id="sensorThreshold">800 PPM</strong>
+                    </div>
+                    <div class="sensor-info-item">
+                        <span>Estado:</span> <strong id="sensorStatus">Listo para vincular</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hierarchy Selection -->
+            <div class="hierarchy-section" id="hierarchySection" style="display: none;">
+                <h3 style="font-size: 1rem; color: #34495e; margin: 1.5rem 0 1rem;">Vincular a Ubicación</h3>
+
+                <!-- Step 2: Client -->
+                <div class="hierarchy-step">
+                    <div class="step-number" id="step1">1</div>
+                    <div class="step-content">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="clientSelect">Cliente</label>
+                            <select id="clientSelect" class="form-control" disabled>
+                                <option value="">-- Seleccionar Cliente --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Building -->
+                <div class="hierarchy-step">
+                    <div class="step-number" id="step2">2</div>
+                    <div class="step-content">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="buildingSelect">Edificio</label>
+                            <select id="buildingSelect" class="form-control" disabled>
+                                <option value="">-- Seleccionar Edificio --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Apartment -->
+                <div class="hierarchy-step">
+                    <div class="step-number" id="step3">3</div>
+                    <div class="step-content">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="apartmentSelect">Apartamento</label>
+                            <select id="apartmentSelect" class="form-control" disabled>
+                                <option value="">-- Seleccionar Apartamento --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Location -->
+                <div class="hierarchy-step">
+                    <div class="step-number" id="step4">4</div>
+                    <div class="step-content">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="locationSelect">Sector / Ubicación</label>
+                            <select id="locationSelect" class="form-control" disabled>
+                                <option value="">-- Seleccionar Sector --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Options -->
+            <div class="config-options" id="configOptions" style="display: none;">
+                <h4>Configuración Adicional</h4>
+                <div class="option-row">
+                    <div class="form-group">
+                        <label for="thresholdInput">Umbral de Alerta (PPM)</label>
+                        <input
+                            type="number"
+                            id="thresholdInput"
+                            class="form-control"
+                            value="800"
+                            min="100"
+                            max="10000"
+                            step="50"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="adminSelect">Administrador del Edificio</label>
+                        <select id="adminSelect" class="form-control">
+                            <option value="">-- Sin administrador asignado --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <div class="preview-title">Vista Previa de Vinculación</div>
+                <div class="preview-hierarchy">
+                    <span class="preview-item" id="previewClient">Cliente</span>
+                    <span class="preview-arrow">&rarr;</span>
+                    <span class="preview-item" id="previewBuilding">Edificio</span>
+                    <span class="preview-arrow">&rarr;</span>
+                    <span class="preview-item" id="previewApartment">Apartamento</span>
+                    <span class="preview-arrow">&rarr;</span>
+                    <span class="preview-item" id="previewLocation">Sector</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions">
+                <button class="btn btn-secondary" id="resetBtn">Limpiar</button>
+                <button class="btn btn-primary" id="registerBtn" disabled>
+                    Registrar Sensor
+                </button>
+            </div>
+        </div>
+
+        <!-- Recently Registered Sensors -->
+        <div class="config-card recently-registered">
+            <h2 class="card-title">Sensores Registrados Recientemente</h2>
+            <div class="sensor-list" id="recentSensorsList">
+                <div class="sensor-list-item">
+                    <div>
+                        <div class="sensor-code">S-TC-305-001</div>
+                        <div class="sensor-location">Torre Central / Apt 305 / Cocina</div>
+                    </div>
+                    <div class="sensor-date">Hace 2 horas</div>
+                </div>
+                <div class="sensor-list-item">
+                    <div>
+                        <div class="sensor-code">S-RN-201-001</div>
+                        <div class="sensor-location">Residencial Norte / Apt 201 / Lavadero</div>
+                    </div>
+                    <div class="sensor-date">Hace 5 horas</div>
+                </div>
+                <div class="sensor-list-item">
+                    <div>
+                        <div class="sensor-code">S-IN-A-003</div>
+                        <div class="sensor-location">Planta Industrial / Área A / Bodega</div>
+                    </div>
+                    <div class="sensor-date">Ayer</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Demo data - In production this would come from API calls
+        const demoData = {
+            clients: [
+                { id: 'c1', name: 'Constructora ABC', admin_name: 'Carlos Gómez' },
+                { id: 'c2', name: 'Inmobiliaria XYZ', admin_name: 'María López' },
+                { id: 'c3', name: 'Industrias del Norte', admin_name: 'Roberto Sánchez' }
+            ],
+            buildings: {
+                'c1': [
+                    { id: 'b1', name: 'Torre Central', address: 'Av. Principal 123' },
+                    { id: 'b2', name: 'Residencial Norte', address: 'Calle 45 #678' }
+                ],
+                'c2': [
+                    { id: 'b3', name: 'Edificio Comercial Plaza', address: 'Centro Comercial' }
+                ],
+                'c3': [
+                    { id: 'b4', name: 'Planta Industrial', address: 'Zona Industrial' }
+                ]
+            },
+            apartments: {
+                'b1': [
+                    { id: 'a1', number: '101', floor: 1 },
+                    { id: 'a2', number: '203', floor: 2 },
+                    { id: 'a3', number: '305', floor: 3 }
+                ],
+                'b2': [
+                    { id: 'a4', number: '101', floor: 1 },
+                    { id: 'a5', number: '201', floor: 2 }
+                ],
+                'b3': [
+                    { id: 'a6', number: 'Local 1', floor: 1 },
+                    { id: 'a7', number: 'Local 2', floor: 1 }
+                ],
+                'b4': [
+                    { id: 'a8', number: 'Área A', floor: 1 },
+                    { id: 'a9', number: 'Área B', floor: 1 }
+                ]
+            },
+            locations: {
+                'a1': [
+                    { id: 'l1', type: 'cocina', name: 'Cocina' },
+                    { id: 'l2', type: 'lavadero', name: 'Lavadero' }
+                ],
+                'a2': [
+                    { id: 'l3', type: 'cocina', name: 'Cocina' },
+                    { id: 'l4', type: 'sala', name: 'Sala' }
+                ],
+                'a3': [
+                    { id: 'l5', type: 'cocina', name: 'Cocina' },
+                    { id: 'l6', type: 'lavadero', name: 'Lavadero' },
+                    { id: 'l7', type: 'bodega', name: 'Bodega' }
+                ],
+                'a4': [
+                    { id: 'l8', type: 'cocina', name: 'Cocina' }
+                ],
+                'a5': [
+                    { id: 'l9', type: 'cocina', name: 'Cocina' },
+                    { id: 'l10', type: 'lavadero', name: 'Lavadero' }
+                ],
+                'a6': [
+                    { id: 'l11', type: 'bodega', name: 'Bodega' }
+                ],
+                'a7': [
+                    { id: 'l12', type: 'bodega', name: 'Bodega' }
+                ],
+                'a8': [
+                    { id: 'l13', type: 'bodega', name: 'Bodega Principal' },
+                    { id: 'l14', type: 'otro', name: 'Área de Producción' }
+                ],
+                'a9': [
+                    { id: 'l15', type: 'garaje', name: 'Garaje' },
+                    { id: 'l16', type: 'bodega', name: 'Almacén' }
+                ]
+            },
+            admins: [
+                { id: 'admin1', name: 'Juan Pérez', email: 'juan@example.com' },
+                { id: 'admin2', name: 'Ana García', email: 'ana@example.com' },
+                { id: 'admin3', name: 'Luis Rodríguez', email: 'luis@example.com' }
+            ]
+        };
+
+        // DOM Elements
+        const sensorCodeInput = document.getElementById('sensorCode');
+        const codeStatus = document.getElementById('codeStatus');
+        const sensorInfo = document.getElementById('sensorInfo');
+        const hierarchySection = document.getElementById('hierarchySection');
+        const configOptions = document.getElementById('configOptions');
+        const previewSection = document.getElementById('previewSection');
+
+        const clientSelect = document.getElementById('clientSelect');
+        const buildingSelect = document.getElementById('buildingSelect');
+        const apartmentSelect = document.getElementById('apartmentSelect');
+        const locationSelect = document.getElementById('locationSelect');
+        const adminSelect = document.getElementById('adminSelect');
+
+        const registerBtn = document.getElementById('registerBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const alertContainer = document.getElementById('alertContainer');
+
+        // State
+        let selectedClient = null;
+        let selectedBuilding = null;
+        let selectedApartment = null;
+        let selectedLocation = null;
+
+        // Initialize
+        function init() {
+            loadAdmins();
+            setupEventListeners();
+        }
+
+        // Load admin options
+        function loadAdmins() {
+            adminSelect.innerHTML = '<option value="">-- Sin administrador asignado --</option>';
+            demoData.admins.forEach(admin => {
+                const option = document.createElement('option');
+                option.value = admin.id;
+                option.textContent = `${admin.name} (${admin.email})`;
+                adminSelect.appendChild(option);
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Sensor code input
+            sensorCodeInput.addEventListener('input', handleSensorCodeInput);
+
+            // Cascading selects
+            clientSelect.addEventListener('change', handleClientChange);
+            buildingSelect.addEventListener('change', handleBuildingChange);
+            apartmentSelect.addEventListener('change', handleApartmentChange);
+            locationSelect.addEventListener('change', handleLocationChange);
+
+            // Buttons
+            registerBtn.addEventListener('click', handleRegister);
+            resetBtn.addEventListener('click', handleReset);
+        }
+
+        // Handle sensor code input
+        function handleSensorCodeInput(e) {
+            const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            e.target.value = value;
+
+            if (value.length === 10) {
+                // Valid code length - simulate validation
+                validateSensorCode(value);
+            } else if (value.length > 0) {
+                codeStatus.textContent = '';
+                sensorInfo.style.display = 'none';
+                hierarchySection.style.display = 'none';
+                configOptions.style.display = 'none';
+                previewSection.style.display = 'none';
+                sensorCodeInput.classList.remove('success', 'error');
+            } else {
+                codeStatus.textContent = '';
+                sensorInfo.style.display = 'none';
+                hierarchySection.style.display = 'none';
+                configOptions.style.display = 'none';
+                previewSection.style.display = 'none';
+            }
+        }
+
+        // Validate sensor code (simulated)
+        function validateSensorCode(code) {
+            // Simulate API call
+            setTimeout(() => {
+                // Demo: Accept any 10-char code that doesn't start with 'X'
+                if (code.startsWith('X')) {
+                    codeStatus.textContent = '❌';
+                    sensorCodeInput.classList.add('error');
+                    sensorCodeInput.classList.remove('success');
+                    showAlert('error', 'Código de sensor no válido o ya registrado');
+                    sensorInfo.style.display = 'none';
+                    hierarchySection.style.display = 'none';
+                } else {
+                    codeStatus.textContent = '✅';
+                    sensorCodeInput.classList.add('success');
+                    sensorCodeInput.classList.remove('error');
+
+                    // Show sensor info
+                    sensorInfo.style.display = 'block';
+
+                    // Enable hierarchy selection
+                    hierarchySection.style.display = 'block';
+                    configOptions.style.display = 'block';
+                    previewSection.style.display = 'block';
+
+                    // Load clients
+                    loadClients();
+                    updateStepIndicators();
+                }
+            }, 500);
+        }
+
+        // Load clients into select
+        function loadClients() {
+            clientSelect.innerHTML = '<option value="">-- Seleccionar Cliente --</option>';
+            demoData.clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = client.name;
+                clientSelect.appendChild(option);
+            });
+            clientSelect.disabled = false;
+            document.getElementById('step1').classList.add('active');
+        }
+
+        // Handle client selection
+        function handleClientChange(e) {
+            selectedClient = e.target.value;
+
+            // Reset downstream selects
+            buildingSelect.innerHTML = '<option value="">-- Seleccionar Edificio --</option>';
+            apartmentSelect.innerHTML = '<option value="">-- Seleccionar Apartamento --</option>';
+            locationSelect.innerHTML = '<option value="">-- Seleccionar Sector --</option>';
+
+            buildingSelect.disabled = true;
+            apartmentSelect.disabled = true;
+            locationSelect.disabled = true;
+
+            selectedBuilding = null;
+            selectedApartment = null;
+            selectedLocation = null;
+
+            if (selectedClient) {
+                // Load buildings for this client
+                const buildings = demoData.buildings[selectedClient] || [];
+                buildings.forEach(building => {
+                    const option = document.createElement('option');
+                    option.value = building.id;
+                    option.textContent = `${building.name} - ${building.address}`;
+                    buildingSelect.appendChild(option);
+                });
+                buildingSelect.disabled = false;
+                document.getElementById('step1').classList.add('completed');
+                document.getElementById('step2').classList.add('active');
+            }
+
+            updatePreview();
+            updateRegisterButton();
+            updateStepIndicators();
+        }
+
+        // Handle building selection
+        function handleBuildingChange(e) {
+            selectedBuilding = e.target.value;
+
+            // Reset downstream selects
+            apartmentSelect.innerHTML = '<option value="">-- Seleccionar Apartamento --</option>';
+            locationSelect.innerHTML = '<option value="">-- Seleccionar Sector --</option>';
+
+            apartmentSelect.disabled = true;
+            locationSelect.disabled = true;
+
+            selectedApartment = null;
+            selectedLocation = null;
+
+            if (selectedBuilding) {
+                // Load apartments for this building
+                const apartments = demoData.apartments[selectedBuilding] || [];
+                apartments.forEach(apt => {
+                    const option = document.createElement('option');
+                    option.value = apt.id;
+                    option.textContent = `${apt.number} (Piso ${apt.floor})`;
+                    apartmentSelect.appendChild(option);
+                });
+                apartmentSelect.disabled = false;
+                document.getElementById('step2').classList.add('completed');
+                document.getElementById('step3').classList.add('active');
+            }
+
+            updatePreview();
+            updateRegisterButton();
+            updateStepIndicators();
+        }
+
+        // Handle apartment selection
+        function handleApartmentChange(e) {
+            selectedApartment = e.target.value;
+
+            // Reset location select
+            locationSelect.innerHTML = '<option value="">-- Seleccionar Sector --</option>';
+            locationSelect.disabled = true;
+            selectedLocation = null;
+
+            if (selectedApartment) {
+                // Load locations for this apartment
+                const locations = demoData.locations[selectedApartment] || [];
+                locations.forEach(loc => {
+                    const option = document.createElement('option');
+                    option.value = loc.id;
+                    option.textContent = loc.name;
+                    locationSelect.appendChild(option);
+                });
+                locationSelect.disabled = false;
+                document.getElementById('step3').classList.add('completed');
+                document.getElementById('step4').classList.add('active');
+            }
+
+            updatePreview();
+            updateRegisterButton();
+            updateStepIndicators();
+        }
+
+        // Handle location selection
+        function handleLocationChange(e) {
+            selectedLocation = e.target.value;
+
+            if (selectedLocation) {
+                document.getElementById('step4').classList.add('completed');
+            }
+
+            updatePreview();
+            updateRegisterButton();
+            updateStepIndicators();
+        }
+
+        // Update preview section
+        function updatePreview() {
+            const previewClient = document.getElementById('previewClient');
+            const previewBuilding = document.getElementById('previewBuilding');
+            const previewApartment = document.getElementById('previewApartment');
+            const previewLocation = document.getElementById('previewLocation');
+
+            // Client
+            if (selectedClient) {
+                const client = demoData.clients.find(c => c.id === selectedClient);
+                previewClient.textContent = client ? client.name : '';
+                previewClient.classList.remove('empty');
+            } else {
+                previewClient.textContent = 'Cliente';
+                previewClient.classList.add('empty');
+            }
+
+            // Building
+            if (selectedBuilding) {
+                const buildings = demoData.buildings[selectedClient] || [];
+                const building = buildings.find(b => b.id === selectedBuilding);
+                previewBuilding.textContent = building ? building.name : '';
+                previewBuilding.classList.remove('empty');
+            } else {
+                previewBuilding.textContent = 'Edificio';
+                previewBuilding.classList.add('empty');
+            }
+
+            // Apartment
+            if (selectedApartment) {
+                const apartments = demoData.apartments[selectedBuilding] || [];
+                const apartment = apartments.find(a => a.id === selectedApartment);
+                previewApartment.textContent = apartment ? apartment.number : '';
+                previewApartment.classList.remove('empty');
+            } else {
+                previewApartment.textContent = 'Apartamento';
+                previewApartment.classList.add('empty');
+            }
+
+            // Location
+            if (selectedLocation) {
+                const locations = demoData.locations[selectedApartment] || [];
+                const location = locations.find(l => l.id === selectedLocation);
+                previewLocation.textContent = location ? location.name : '';
+                previewLocation.classList.remove('empty');
+            } else {
+                previewLocation.textContent = 'Sector';
+                previewLocation.classList.add('empty');
+            }
+        }
+
+        // Update step indicators
+        function updateStepIndicators() {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            steps.forEach((stepId, index) => {
+                const step = document.getElementById(stepId);
+                step.classList.remove('active', 'completed');
+            });
+
+            if (sensorCodeInput.value.length === 10 && !sensorCodeInput.classList.contains('error')) {
+                if (!selectedClient) {
+                    document.getElementById('step1').classList.add('active');
+                } else if (!selectedBuilding) {
+                    document.getElementById('step1').classList.add('completed');
+                    document.getElementById('step2').classList.add('active');
+                } else if (!selectedApartment) {
+                    document.getElementById('step1').classList.add('completed');
+                    document.getElementById('step2').classList.add('completed');
+                    document.getElementById('step3').classList.add('active');
+                } else if (!selectedLocation) {
+                    document.getElementById('step1').classList.add('completed');
+                    document.getElementById('step2').classList.add('completed');
+                    document.getElementById('step3').classList.add('completed');
+                    document.getElementById('step4').classList.add('active');
+                } else {
+                    document.getElementById('step1').classList.add('completed');
+                    document.getElementById('step2').classList.add('completed');
+                    document.getElementById('step3').classList.add('completed');
+                    document.getElementById('step4').classList.add('completed');
+                }
+            }
+        }
+
+        // Update register button state
+        function updateRegisterButton() {
+            const canRegister = sensorCodeInput.value.length === 10 &&
+                              !sensorCodeInput.classList.contains('error') &&
+                              selectedClient &&
+                              selectedBuilding &&
+                              selectedApartment &&
+                              selectedLocation;
+
+            registerBtn.disabled = !canRegister;
+        }
+
+        // Handle registration
+        function handleRegister() {
+            const sensorCode = sensorCodeInput.value;
+            const threshold = document.getElementById('thresholdInput').value;
+            const admin = adminSelect.value;
+
+            // Simulate API call
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="loading-spinner"></span>Registrando...';
+
+            setTimeout(() => {
+                // Success
+                showAlert('success', `Sensor ${sensorCode} registrado exitosamente`);
+
+                // Add to recent list
+                addToRecentList(sensorCode);
+
+                // Reset form
+                handleReset();
+
+                registerBtn.innerHTML = 'Registrar Sensor';
+            }, 1500);
+        }
+
+        // Add to recent sensors list
+        function addToRecentList(sensorCode) {
+            const list = document.getElementById('recentSensorsList');
+            const client = demoData.clients.find(c => c.id === selectedClient);
+            const buildings = demoData.buildings[selectedClient] || [];
+            const building = buildings.find(b => b.id === selectedBuilding);
+            const apartments = demoData.apartments[selectedBuilding] || [];
+            const apartment = apartments.find(a => a.id === selectedApartment);
+            const locations = demoData.locations[selectedApartment] || [];
+            const location = locations.find(l => l.id === selectedLocation);
+
+            const newItem = document.createElement('div');
+            newItem.className = 'sensor-list-item';
+            newItem.innerHTML = `
+                <div>
+                    <div class="sensor-code">${sensorCode}</div>
+                    <div class="sensor-location">${building?.name || ''} / ${apartment?.number || ''} / ${location?.name || ''}</div>
+                </div>
+                <div class="sensor-date">Ahora</div>
+            `;
+
+            list.insertBefore(newItem, list.firstChild);
+        }
+
+        // Handle reset
+        function handleReset() {
+            sensorCodeInput.value = '';
+            sensorCodeInput.classList.remove('success', 'error');
+            codeStatus.textContent = '';
+
+            sensorInfo.style.display = 'none';
+            hierarchySection.style.display = 'none';
+            configOptions.style.display = 'none';
+            previewSection.style.display = 'none';
+
+            clientSelect.innerHTML = '<option value="">-- Seleccionar Cliente --</option>';
+            buildingSelect.innerHTML = '<option value="">-- Seleccionar Edificio --</option>';
+            apartmentSelect.innerHTML = '<option value="">-- Seleccionar Apartamento --</option>';
+            locationSelect.innerHTML = '<option value="">-- Seleccionar Sector --</option>';
+
+            clientSelect.disabled = true;
+            buildingSelect.disabled = true;
+            apartmentSelect.disabled = true;
+            locationSelect.disabled = true;
+
+            selectedClient = null;
+            selectedBuilding = null;
+            selectedApartment = null;
+            selectedLocation = null;
+
+            document.getElementById('thresholdInput').value = 800;
+            adminSelect.value = '';
+
+            registerBtn.disabled = true;
+
+            updateStepIndicators();
+        }
+
+        // Show alert message
+        function showAlert(type, message) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>

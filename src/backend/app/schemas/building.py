@@ -25,6 +25,7 @@ class BuildingBase(BaseModel):
 class BuildingCreate(BuildingBase):
     """Schema for creating a new building."""
     client_id: UUID = Field(..., description="UUID of the client that owns this building")
+    admin_id: Optional[UUID] = Field(None, description="UUID of the building administrator")
 
 
 class BuildingUpdate(BaseModel):
@@ -37,21 +38,31 @@ class BuildingUpdate(BaseModel):
     postal_code: Optional[str] = Field(None, max_length=20)
     latitude: Optional[Decimal] = Field(None, ge=-90, le=90)
     longitude: Optional[Decimal] = Field(None, ge=-180, le=180)
+    admin_id: Optional[UUID] = Field(None, description="UUID of the building administrator")
 
 
 class BuildingResponse(BuildingBase):
     """Schema for building response."""
     id: UUID
     client_id: UUID
+    admin_id: Optional[UUID] = None
     created_at: datetime
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
 
+class BuildingWithAdmin(BuildingResponse):
+    """Schema for building with admin information."""
+    admin_name: Optional[str] = None
+    admin_email: Optional[str] = None
+
+
 class BuildingWithStats(BuildingResponse):
     """Schema for building with sensor statistics - 5 categories."""
     client_name: Optional[str] = None
+    admin_name: Optional[str] = None
+    admin_email: Optional[str] = None
     total_apartments: int = 0
     total_sensors: int = 0  # Sensores instalados (total)
     online_sensors: int = 0  # Sensores en línea (operational)

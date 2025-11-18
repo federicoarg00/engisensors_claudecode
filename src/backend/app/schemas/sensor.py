@@ -61,3 +61,50 @@ class SensorStatusUpdate(BaseModel):
     status: SensorStatus
     battery_level: Optional[int] = Field(None, ge=0, le=100)
     signal_strength: Optional[int] = None
+
+
+class SensorCodeValidation(BaseModel):
+    """Schema for validating a sensor code."""
+    device_id: str = Field(
+        ...,
+        min_length=10,
+        max_length=10,
+        pattern="^[A-Za-z0-9]{10}$",
+        description="Unique 10-character alphanumeric sensor code"
+    )
+
+
+class SensorCodeValidationResponse(BaseModel):
+    """Response for sensor code validation."""
+    valid: bool
+    available: bool
+    device_id: str
+    message: str
+    # Pre-filled info if sensor is in inventory (future feature)
+    suggested_model: Optional[str] = None
+    suggested_threshold: int = 800
+
+
+class SensorProvision(BaseModel):
+    """Schema for provisioning/registering a new sensor with full hierarchy."""
+    device_id: str = Field(
+        ...,
+        min_length=10,
+        max_length=10,
+        pattern="^[A-Za-z0-9]{10}$",
+        description="Unique 10-character alphanumeric sensor code"
+    )
+    location_id: UUID = Field(..., description="UUID of the location where sensor is installed")
+    gas_threshold_ppm: int = Field(800, ge=100, le=10000, description="Gas alert threshold in PPM")
+    model: Optional[str] = Field("MQ-2 Gas Detector", max_length=100, description="Sensor model name")
+    firmware_version: Optional[str] = Field("v2.1.0", max_length=50, description="Firmware version")
+
+
+class SensorProvisionResponse(SensorResponse):
+    """Response for sensor provisioning including hierarchy info."""
+    location_type: Optional[str] = None
+    apartment_number: Optional[str] = None
+    building_name: Optional[str] = None
+    client_name: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
