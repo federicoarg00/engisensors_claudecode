@@ -9,6 +9,7 @@ from sqlalchemy.orm import relationship
 import uuid
 
 from app.database import Base
+from app.models.associations import building_admins
 
 
 class Building(Base):
@@ -40,8 +41,16 @@ class Building(Base):
 
     # Relationships
     client = relationship("Client", back_populates="buildings")
-    admin = relationship("User", foreign_keys=[admin_id])
+    admin = relationship("User", foreign_keys=[admin_id])  # Deprecated: use admins instead
     apartments = relationship("Apartment", back_populates="building", cascade="all, delete-orphan")
+
+    # Many-to-many relationship with building administrators
+    admins = relationship(
+        "User",
+        secondary=building_admins,
+        backref="managed_buildings",
+        lazy="select"
+    )
 
     def __repr__(self):
         return f"<Building {self.name}>"

@@ -14,8 +14,10 @@ from app.database import Base
 
 class UserRole(str, enum.Enum):
     """User roles in the system."""
-    ADMIN = "admin"
-    CLIENT = "client"
+    ADMIN = "admin"                    # System administrator - full access
+    BUILDING_ADMIN = "building_admin"  # Building administrator - manages buildings
+    OWNER = "owner"                    # Apartment owner - owns apartments, can add residents
+    RESIDENT = "resident"              # Apartment resident - lives in apartment, added by owner
 
 
 class User(Base):
@@ -24,7 +26,9 @@ class User(Base):
 
     Roles:
     - admin: Full system access, can manage all clients and sensors
-    - client: Limited access, can only view/manage their own resources
+    - building_admin: Manages one or multiple buildings, receives all notifications from their buildings
+    - owner: Owns apartment(s), can add residents, receives notifications from their sensors
+    - resident: Lives in apartment(s), added by owner, receives notifications from apartment sensors
     """
     __tablename__ = "users"
 

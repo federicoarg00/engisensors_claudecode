@@ -9,6 +9,7 @@ from sqlalchemy.orm import relationship
 import uuid
 
 from app.database import Base
+from app.models.associations import apartment_owners, apartment_residents
 
 
 class Apartment(Base):
@@ -36,6 +37,20 @@ class Apartment(Base):
     # Relationships
     building = relationship("Building", back_populates="apartments")
     locations = relationship("Location", back_populates="apartment", cascade="all, delete-orphan")
+
+    # Many-to-many relationships with users
+    owners = relationship(
+        "User",
+        secondary=apartment_owners,
+        backref="owned_apartments",
+        lazy="select"
+    )
+    residents = relationship(
+        "User",
+        secondary=apartment_residents,
+        backref="resident_apartments",
+        lazy="select"
+    )
 
     def __repr__(self):
         return f"<Apartment {self.number}>"
